@@ -2,13 +2,13 @@ import { getAuth, requireAuth } from '@clerk/express';
 import type { NextFunction, Request, Response } from 'express';
 import { User } from '../models/User';
 
-export type AuthRequeest = Request & {
+export type AuthRequest = Request & {
   userId?: string;
 };
 
 export const protectRoute = [
   requireAuth(),
-  async (req: AuthRequeest, res: Response, next: NextFunction) => {
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const { userId: clerkId } = getAuth(req);
       if (!clerkId) {
@@ -25,8 +25,8 @@ export const protectRoute = [
       req.userId = user._id.toString();
       next();
     } catch (error) {
-      console.error('Error in protectRoute middleware', error);
-      res.status(500).json({ message: 'Internal server error' });
+      res.status(500);
+      next(error);
     }
   },
 ];
