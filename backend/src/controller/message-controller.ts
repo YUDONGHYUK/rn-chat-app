@@ -18,7 +18,7 @@ export async function getMessages(
     });
 
     if (!chat) {
-      res.status(404).json({ message: 'Chat not found' });
+      return res.status(404).json({ message: 'Chat not found' });
     }
 
     const messages = await Message.find({ chat: chatId })
@@ -28,6 +28,6 @@ export async function getMessages(
     res.json(messages);
   } catch (error) {
     res.status(500);
-    next();
+    next(error);
   }
 }
