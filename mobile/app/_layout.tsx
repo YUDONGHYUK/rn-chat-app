@@ -6,6 +6,33 @@ import AuthSync from '@/components/auth-sync';
 import { StatusBar } from 'expo-status-bar';
 
 import '../global.css';
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+  dsn: 'https://c1defb2d04eae19cf6a4445431a15058@o4511319169499136.ingest.us.sentry.io/4511319178805248',
+
+  // Adds more context data to events (IP address, cookies, user, etc.)
+  // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
+  sendDefaultPii: true,
+
+  // Enable Logs
+  enableLogs: true,
+
+  // Configure Session Replay
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1,
+  integrations: [
+    Sentry.mobileReplayIntegration(),
+    Sentry.reactNativeTracingIntegration({
+      traceFetch: true,
+      traceXHR: true,
+      enableHTTPTimings: true,
+    }),
+  ],
+
+  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
+  // spotlight: __DEV__,
+});
 
 const queryClient = new QueryClient();
 
@@ -15,7 +42,7 @@ if (!publishableKey) {
   throw new Error('Add your Clerk Publishable Key to the .env file');
 }
 
-export default function RootLayout() {
+export default Sentry.wrap(function RootLayout() {
   return (
     <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
       <QueryClientProvider client={queryClient}>
@@ -33,4 +60,4 @@ export default function RootLayout() {
       </QueryClientProvider>
     </ClerkProvider>
   );
-}
+});
